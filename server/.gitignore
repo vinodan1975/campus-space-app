@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary upload directory
+uploads/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test files & outputs
+test_*.csv
+*.xlsx
+
+# OS generated files
+.DS_Store
+Thumbs.db
