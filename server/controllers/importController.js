@@ -95,7 +95,7 @@ const importUsers = [
 
       for (const row of results) {
         try {
-          const { userId, password, role, name } = row;
+          const { userId, password, role, name, department, year } = row;
           if (!userId || !password || !role || !name) {
             errors.push(`Skipped row: missing required field → ${JSON.stringify(row)}`);
             skipped++;
@@ -114,6 +114,8 @@ const importUsers = [
             password: password.trim(),
             role: role.trim(),
             name: name.trim(),
+            department: department ? department.trim() : undefined,
+            year: year ? year.trim() : undefined,
           });
           inserted++;
         } catch (e) {
@@ -140,7 +142,7 @@ const downloadTemplate = (req, res) => {
   const { type } = req.params;
   const templates = {
     rooms: 'roomNumber,floor,type,capacity,labType\n101,1,Classroom,60,\n102,1,Classroom,60,\nLab 1,2,Computer Lab,30,Windows\nSeminar Hall A,3,Seminar Hall,100,',
-    users: 'userId,password,role,name\nSTU100,password123,Student,John Doe\nFAC100,password123,Faculty,Dr. Jane Smith\nADM100,password123,Admin,Admin User',
+    users: 'userId,password,role,name,department,year\nSTU100,password123,Student,John Doe,BSc-IT,SY\nFAC100,password123,Faculty,Dr. Jane Smith,,\nADM100,password123,Admin,Admin User,,',
   };
   if (!templates[type]) return res.status(404).json({ message: 'Unknown template type' });
 

@@ -27,7 +27,8 @@ const seedData = async () => {
 
     // 1. Create Users (use create() to trigger pre-save hook)
     const usersData = [
-      { userId: 'STU001', password: 'password123', role: 'Student', name: 'Alice Student' },
+      { userId: 'STU001', password: 'password123', role: 'Student', name: 'Alice Student', department: 'BSc-IT', year: 'SY' },
+      { userId: 'STU002', password: 'password123', role: 'Student', name: 'Bob Student', department: 'BAF', year: 'FY' },
       { userId: 'FAC001', password: 'password123', role: 'Faculty', name: 'Dr. John Smith' },
       { userId: 'FAC002', password: 'password123', role: 'Faculty', name: 'Prof. Sarah Johnson' },
       { userId: 'ADM001', password: 'password123', role: 'Admin', name: 'Admin User' }
@@ -47,6 +48,7 @@ const seedData = async () => {
     const rooms = await Room.insertMany([
       { roomNumber: '101', floor: 1, type: 'Classroom', capacity: 60 },
       { roomNumber: '102', floor: 1, type: 'Classroom', capacity: 60 },
+      { roomNumber: 'Study Room 1', floor: 1, type: 'Study Room', capacity: 10 },
       { roomNumber: '201', floor: 2, type: 'Classroom', capacity: 40 },
       { roomNumber: '202', floor: 2, type: 'Classroom', capacity: 40 },
       { roomNumber: 'Lab 1', floor: 3, type: 'Computer Lab', capacity: 30, labType: 'Standard' },
@@ -61,15 +63,14 @@ const seedData = async () => {
     // Create a time 1 hour in the past to 1 hour in the future (currently occupied)
     const startTimeOccupied = new Date(now.getTime() - 60 * 60 * 1000);
     const endTimeOccupied = new Date(now.getTime() + 60 * 60 * 1000);
-
-    // Create a time 2 hours in the future to 4 hours in the future (reserved later, but we'll just set it to active for demonstration of "Reserved" status)
-    // Wait, the frontend checks if it's currently active. Let's make them both active but with different statuses.
     
     await Booking.insertMany([
       {
         room: rooms.find(r => r.roomNumber === '102')._id,
         faculty: fac1._id,
         subject: 'Data Structures',
+        department: 'BSc-IT',
+        year: 'SY',
         startTime: startTimeOccupied,
         endTime: endTimeOccupied,
         status: 'Occupied',
@@ -78,7 +79,9 @@ const seedData = async () => {
       {
         room: rooms.find(r => r.roomNumber === '202')._id,
         faculty: fac2._id,
-        subject: 'Operating Systems',
+        subject: 'Financial Accounting',
+        department: 'BAF',
+        year: 'FY',
         startTime: startTimeOccupied,
         endTime: endTimeOccupied,
         status: 'Occupied',
@@ -88,6 +91,8 @@ const seedData = async () => {
         room: rooms.find(r => r.roomNumber === 'Lab 2')._id,
         faculty: fac1._id,
         subject: 'Web Dev Workshop',
+        department: 'BSc-IT',
+        year: 'TY',
         startTime: startTimeOccupied,
         endTime: endTimeOccupied,
         status: 'Reserved',

@@ -18,6 +18,8 @@ const loginUser = async (req, res) => {
         userId: user.userId,
         name: user.name,
         role: user.role,
+        department: user.department || null,
+        year: user.year || null,
         token: generateToken(user._id),
       });
     } else {

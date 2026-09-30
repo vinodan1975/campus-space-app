@@ -27,6 +27,8 @@ const getRooms = async (req, res) => {
            status: currentStatus,
            faculty: booking.faculty ? booking.faculty.name : null,
            subject: booking.subject,
+           department: booking.department || null,
+           year: booking.year || null,
            startTime: booking.startTime,
            endTime: booking.endTime,
          };
@@ -37,6 +39,8 @@ const getRooms = async (req, res) => {
          status: 'Available',
          faculty: null,
          subject: null,
+         department: null,
+         year: null,
          startTime: null,
          endTime: null,
        };
@@ -61,7 +65,7 @@ const getRooms = async (req, res) => {
 };
 
 const searchRooms = async (req, res) => {
-  const { roomNumber, floor, type, capacity } = req.query;
+  const { roomNumber, floor, type, capacity, status } = req.query;
   const query = {};
   
   if (roomNumber) query.roomNumber = { $regex: roomNumber, $options: 'i' };
@@ -71,7 +75,46 @@ const searchRooms = async (req, res) => {
   
   try {
     const rooms = await Room.find(query);
-    res.json(rooms);
+    const now = new Date();
+    const upcomingBookings = await Booking.find({
+      endTime: { $gte: now }
+    }).populate('faculty', 'name').sort({ startTime: 1 });
+
+    const results = rooms.map(room => {
+      const booking = upcomingBookings.find(b => b.room.toString() === room._id.toString());
+      if (booking) {
+        let currentStatus = booking.status;
+        if (new Date(booking.startTime) > now) {
+          currentStatus = 'Reserved';
+        }
+        return {
+          ...room._doc,
+          status: currentStatus,
+          faculty: booking.faculty ? booking.faculty.name : null,
+          subject: booking.subject,
+          department: booking.department || null,
+          year: booking.year || null,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+        };
+      }
+      return {
+        ...room._doc,
+        status: 'Available',
+        faculty: null,
+        subject: null,
+        department: null,
+        year: null,
+        startTime: null,
+        endTime: null,
+      };
+    });
+
+    if (status) {
+      return res.json(results.filter(r => r.status.toLowerCase() === status.toLowerCase()));
+    }
+
+    res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

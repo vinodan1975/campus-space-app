@@ -15,6 +15,14 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  department: {
+    type: String, // e.g. 'BSc-IT', 'BAF', 'BMS'
+    trim: true,
+  },
+  year: {
+    type: String, // 'FY', 'SY', 'TY'
+    enum: ['FY', 'SY', 'TY', null],
+  },
   startTime: {
     type: Date,
     required: true,
